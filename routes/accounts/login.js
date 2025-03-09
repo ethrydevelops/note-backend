@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post("/auth/login", (req, res) => {
     if(!req.body.username || !req.body.password) {
-        res.status(400).json({ error: "Missing username or password"});
+        return res.status(400).json({ error: "Missing username or password"});
     }
     
     auth.login(req.body.username, req.body.password)

@@ -5,15 +5,15 @@ const router = express.Router();
 
 router.post("/auth/register", (req, res) => {
     if(!req.body.username || !req.body.password) {
-        res.status(400).json({ error: "Missing username or password"});
+        return res.status(400).json({ error: "Missing username or password"});
     }
 
     if(req.body.username.length > 20) {
-        res.status(400).json({ error: "Username must be less than 20 characters"});
+        return res.status(400).json({ error: "Username must be less than 20 characters"});
     }
 
     if(req.body.password.length < 8) {
-        res.status(400).json({ error: "Password must be at least 8 characters"});
+        return res.status(400).json({ error: "Password must be at least 8 characters"});
     }
 
     auth.register(req.body.username, req.body.password)
