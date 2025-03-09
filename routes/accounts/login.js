@@ -11,7 +11,7 @@ router.post("/auth/login", (req, res) => {
     auth.login(req.body.username, req.body.password)
         .then(user => {
             if(user == false) {
-                res.json({ error: "Invalid username or password" });
+                res.status(401).json({ error: "Invalid username or password" });
             } else {
                 res.json({ success:true, token: user});
             }
