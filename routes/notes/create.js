@@ -9,6 +9,14 @@ router.post("/notes/", auth.express_middleware.bind(auth), (req, res) => {
     const uuid = req.eauth.user.id;
     const id = crypto.randomBytes(16).toString('hex');
 
+    if(req.body.title && req.body.title.length > 50) {
+        return res.status(400).json({ error: "Title must be less than 50 characters" });
+    }
+
+    if(req.body.content && req.body.content.length >= 2000) {
+        return res.status(400).json({ error: "Content must be less than 2000 characters" });
+    }
+
     knex("notes").insert({
         id,
         title: req.body.title || "",
