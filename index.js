@@ -8,7 +8,9 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.disable("x-powered-by");
+
 app.use(express.json());
+app.use(require("cors")());
 
 function loadRoutes(dir) {
   const files = fs.readdirSync(dir);
