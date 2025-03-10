@@ -18,6 +18,13 @@ router.post("/auth/register", (req, res) => {
 
     auth.register(req.body.username, req.body.password)
         .then(user => {
+            if(user.error) {
+                if(user.error == "An account with this username already exists") {
+                    return res.status(409).json({ error: "An account with this username already exists" });
+                } else {
+                    return res.status(500).json({ error: "Unexpected error" });
+                }
+            }
             res.json(user);
         })
         .catch(error => {
