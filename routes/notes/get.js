@@ -10,7 +10,7 @@ router.get("/notes/", auth.express_middleware.bind(auth), (req, res) => {
     
     const notes = knex("notes")
         .where("uuid", uuid)
-        .select("id", "title", "content")
+        .select("id", "title", "content", "updated_at")
         .orderBy("updated_at", "desc");
 
     notes.then(notes => {
@@ -28,7 +28,7 @@ router.get("/notes/:id", auth.express_middleware.bind(auth), (req, res) => {
     knex("notes")
         .where("id", id)
         .andWhere("uuid", uuid)
-        .select("id", "title", "content")
+        .select("id", "title", "content", "updated_at")
         .then(notes => {
             if(notes.length == 0) {
                 return res.status(404).json({ error: "Note not found" });
