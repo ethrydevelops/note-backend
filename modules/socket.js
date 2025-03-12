@@ -54,8 +54,6 @@ function emitToClient(userId, event, data) {
     if (socketId) {
         const socket = io.sockets.sockets.get(socketId);
         socket.emit(event, data); // emit event to specific client
-    } else {
-        logging.error(userSocketMap);
     }
 }
 
