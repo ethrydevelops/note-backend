@@ -22,16 +22,16 @@ function loadRoutes(dir) {
       const stat = fs.statSync(fullPath);
 
       if (stat.isDirectory()) {
-          loadRoutes(fullPath); // load routes in subdirectories
+        loadRoutes(fullPath); // load routes in subdirectories
       } else if (file.endsWith('.js')) {
-          // if its a valid route file, load it
-          const route = require(fullPath);
-          try {
-              app.use(route);
-              logging.info("Loaded route from " + relativePath);
-          } catch (error) {
-              logging.error("Failed to load route from " + relativePath + ": " + error);
-          }
+        // if its a valid route file, load it
+        const route = require(fullPath);
+        try {
+          app.use(route);
+          logging.info("Loaded route from " + relativePath);
+        } catch (error) {
+          logging.error("Failed to load route from " + relativePath + ": " + error);
+        }
       }
   });
 }
@@ -48,8 +48,9 @@ app.get("/", (req, res) => {
 async function start() {
   loadRoutes(path.join(__dirname, "routes"));
 
-  srv.server(app).listen(port, () => {
-    logging.log(`Note-backend server listening on http://localhost:${port}`);
+  let serverinstance = srv.server(app);
+  serverinstance.listen(port, () => {
+    logging.log(`Note-backend server listening on ${serverinstance.proto}://localhost:${port}`);
   });
 }
 

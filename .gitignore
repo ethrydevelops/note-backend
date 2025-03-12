@@ -136,3 +136,4 @@ dist
 .pnp.*
 
 knexfile.js
+dev_certs/

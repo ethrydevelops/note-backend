@@ -1,28 +1,63 @@
 const { createServer } = require('node:http');
+const { createServer: createSecureServer } = require('node:https');
+const path = require("path");
 const { Server } = require('socket.io');
+const fs = require('fs');
 const auth = require("./auth.js");
 const logging = require("./console.js");
 
+require("dotenv").config();
+
 var userSocketMap = {};
-var io;
+var io, proto;
 
 const server = (app) => {
-    const srv = createServer(app);
+    let srv;
+
+    if (process.env.HTTPS && process.env.HTTPS == "true") {
+        if(!(process.env.HTTPS_KEY_PATH && process.env.HTTPS_CERT_PATH)) {
+            logging.error("HTTPS_KEY_PATH and HTTPS_CERT_PATH must be populated with valid SSL certificate and private key.");
+            throw new Error("HTTPS_KEY_PATH and HTTPS_CERT_PATH must be populated with valid SSL certificate and private key.");
+        }
+        /* get ssl stuff from env vars */
+        const keyPath = path.resolve(__dirname, '..', process.env.HTTPS_KEY_PATH);
+        const certPath = path.resolve(__dirname, '..', process.env.HTTPS_CERT_PATH);
+
+        if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+            const sslOptions = {
+                key: fs.readFileSync(keyPath),
+                cert: fs.readFileSync(certPath),
+            };
+            srv = createSecureServer(sslOptions, app);
+            logging.info("Starting server on HTTPS");
+
+            proto = "https";
+        } else {
+            logging.error("HTTPS key or certificate file not found at "+keyPath+", "+certPath+". Falling back to HTTP.");
+            srv = createServer(app);
+
+            proto = "http";
+        }
+    } else {
+        srv = createServer(app);
+        logging.info("Starting server on HTTP");
+
+        proto = "http";
+    }
+
     io = new Server(srv);
 
     io.use(async (socket, next) => {
         const token = socket.handshake.query.token || socket.handshake.headers['authorization'];
 
         if (!token) {
-            // no token provided, reject
             return next(new Error('Authentication error: No token provided'));
         }
 
         if (auth.verifyToken(token)) {
             const [sid, tok] = token.split(".");
-            const uuid = await auth.getUserIdFromSessionId(sid); // get uuid
-            
-            // map user id to socket id
+            const uuid = await auth.getUserIdFromSessionId(sid);
+
             socket.userId = uuid;
             userSocketMap[uuid] = socket.id;
 
@@ -33,7 +68,6 @@ const server = (app) => {
     });
 
     io.on('connection', (socket) => {
-        // handle disconnect + remove user from mapping
         socket.on('disconnect', () => {
             delete userSocketMap[socket.userId];
         });
@@ -41,6 +75,7 @@ const server = (app) => {
 
     return {
         listen: (port, callback) => srv.listen(port, callback),
+        proto
     };
 };
 
@@ -53,7 +88,7 @@ function emitToClient(userId, event, data) {
     const socketId = userSocketMap[userId];
     if (socketId) {
         const socket = io.sockets.sockets.get(socketId);
-        socket.emit(event, data); // emit event to specific client
+        socket.emit(event, data);
     }
 }
 
