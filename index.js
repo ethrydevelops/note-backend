@@ -2,6 +2,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const logging = require("./modules/console.js");
+const srv = require("./modules/socket.js");
 require("dotenv").config();
 
 const app = express();
@@ -47,7 +48,7 @@ app.get("/", (req, res) => {
 async function start() {
   loadRoutes(path.join(__dirname, "routes"));
 
-  app.listen(port, () => {
+  srv.server(app).listen(port, () => {
     logging.log(`Note-backend server listening on http://localhost:${port}`);
   });
 }
