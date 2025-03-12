@@ -10,7 +10,8 @@ router.get("/notes/", auth.express_middleware.bind(auth), (req, res) => {
     
     const notes = knex("notes")
         .where("uuid", uuid)
-        .select("id", "title", "content");
+        .select("id", "title", "content")
+        .orderBy("updated_at", "desc");
 
     notes.then(notes => {
         return res.json(notes);
