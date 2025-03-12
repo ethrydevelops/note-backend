@@ -15,7 +15,7 @@ router.post("/notes/", auth.express_middleware.bind(auth), (req, res) => {
         return res.status(400).json({ error: "Title must be less than 50 characters" });
     }
 
-    if(req.body.content && req.body.content.length >= 2000) {
+    if(req.body.content && req.body.content.length > 2000) {
         return res.status(400).json({ error: "Content must be less than 2000 characters" });
     }
     
