@@ -59,7 +59,7 @@ Once the server is running, you can interact with the API using tools like Postm
 Contributions are welcome! Feel free to submit issues or pull requests to improve the backend.
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the GPLv3 License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
