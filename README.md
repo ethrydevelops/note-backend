@@ -21,7 +21,7 @@ Ensure you have the following installed:
 ### Setup Guide
 1. **Clone the Repository**
    ```sh
-   git clone https://github.com/ethrythedev/note-backend.git
+   git clone https://github.com/ethrydevelops/note-backend.git
    cd note-backend
    ```
 
